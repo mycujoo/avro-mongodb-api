@@ -88,15 +88,19 @@ module.exports = {
 
         const consumer = new Consumer(kafkaOpts)
 
-        consumer.pipe(
-          new Writable({
-            objectMode: true,
-            write: (doc, enc, cb) => {
-              const query = _.pick(doc, uniqueProps)
-              model.findOneAndUpdate(query, doc, { upsert: true }, cb)
-            },
-          }),
-        )
+        consumer
+          .once('ready', () => {
+            logger.info('Kafka consumer is ready')
+          })
+          .pipe(
+            new Writable({
+              objectMode: true,
+              write: (doc, enc, cb) => {
+                const query = _.pick(doc, uniqueProps)
+                model.findOneAndUpdate(query, doc, { upsert: true }, cb)
+              },
+            }),
+          )
       },
     )
 

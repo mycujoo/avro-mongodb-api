@@ -1,7 +1,5 @@
 'use strict'
 
-const { name, version } = require('./package.json')
-
 const serverPort = process.env.SERVER_PORT || 3007
 const metricsPort = process.env.METRICS_PORT || 10257
 
@@ -11,14 +9,14 @@ module.exports = {
     port: serverPort,
   },
   metrics: {
-    name,
-    version,
+    name: 'avroMongodbApi',
+    version: 1,
     host: '0.0.0.0',
     port: metricsPort,
   },
   mongodb: {
     hosts: [{ host: 'localhost', port: 27017 }],
-    database: 'database',
+    database: 'test_database',
     options: {},
   },
   redis: {
