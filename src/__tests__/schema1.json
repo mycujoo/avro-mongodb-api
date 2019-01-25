@@ -1,0 +1,43 @@
+{
+  "type": "record",
+  "name": "subscriptions",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "Subscription hash, sha256"
+    },
+    {
+      "name": "previousId",
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": "",
+      "doc": "Previous subscription hash, sha256"
+    },
+    {
+      "doc": "List of followed items that belong to this subscription",
+      "name": "follows",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "followedItem",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "doc": "Id of the followed item"
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "doc": "Type of the followed item"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

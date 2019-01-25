@@ -1,0 +1,182 @@
+{
+  "type": "record",
+  "name": "competition_v2",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "ID of the competition"
+    },
+    {
+      "name": "internationalName",
+      "type": "string",
+      "doc": "International name of the competition"
+    },
+    {
+      "name": "localLanguage",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "The localised language of the competition (E.g en-US)"
+    },
+    {
+      "name": "localName",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "The localised name of the competition"
+    },
+    {
+      "name": "shortName",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Short name of the competition"
+    },
+    {
+      "name": "gender",
+      "type": {
+        "type": "enum",
+        "name": "competitionGenders",
+        "symbols": [
+          "men",
+          "women",
+          "mixed"
+        ]
+      },
+      "doc": "Gender of teams participating of the competition"
+    },
+    {
+      "name": "division",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Division of competition (E.g A Series, 2nd division)"
+    },
+    {
+      "name": "logoUrl",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Logo of the competition (Url absolute path)"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Description of the competition (Url absolute path)"
+    },
+    {
+      "name": "active",
+      "type": "boolean",
+      "doc": "Status of the competition"
+    },
+    {
+      "name": "sport",
+      "type": {
+        "type": "enum",
+        "name": "competitionSports",
+        "symbols": [
+          "football",
+          "fieldHockey"
+        ]
+      },
+      "doc": "Sport being played in the competition",
+      "default": "football"
+    },
+    {
+      "name": "discipline",
+      "type": {
+        "type": "enum",
+        "name": "competitionDisciplines",
+        "symbols": [
+          "football",
+          "futsal",
+          "beachSoccer",
+          "miniFootball",
+          "beachHockey",
+          "elevenASide",
+          "fiveASide"
+        ]
+      },
+      "doc": "Discipline of the sport"
+    },
+    {
+      "name": "ageCategory",
+      "type": {
+        "type": "enum",
+        "name": "ageCategories",
+        "symbols": [
+          "u6",
+          "u7",
+          "u8",
+          "u9",
+          "u10",
+          "u11",
+          "u12",
+          "u13",
+          "u14",
+          "u15",
+          "u16",
+          "u17",
+          "u18",
+          "u19",
+          "u20",
+          "u21",
+          "u22",
+          "u23",
+          "senior",
+          "veterans"
+        ]
+      },
+      "doc": "Age category of players participating in the competition"
+    },
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "Unique ID for the Kafka event"
+    },
+    {
+      "name": "traceToken",
+      "type": [
+        "string",
+        "null"
+      ],
+      "doc": "Trace token for this request, coming from upstream service"
+    },
+    {
+      "name": "entities",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "competitionEntity",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string"
+            },
+            {
+              "name": "organizer",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "doc": "Entities that are co-organizing the competition"
+    },
+    {
+      "name": "createdAt",
+      "type": "long",
+      "doc": "Time when request was processed by the service",
+      "logicalType": "timestamp-millis"
+    }
+  ]
+}
