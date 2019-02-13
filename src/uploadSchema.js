@@ -4,7 +4,7 @@ const config = require('config')
 const got = require('got')
 
 function uploadSchema(topic, schema) {
-  const kafkaKey = `${topic}-value`
+  const schemaName = `${topic}-value`
 
   const gotInstance = got.extend({
     baseUrl: config.kafka.avro.schemaRegistry,
@@ -13,7 +13,7 @@ function uploadSchema(topic, schema) {
     },
   })
 
-  const uri = `/subjects/${kafkaKey}/versions`
+  const uri = `/subjects/${schemaName}/versions`
   const stringifiedSchema = JSON.stringify(JSON.stringify(schema))
 
   const payload = `{"schema":${stringifiedSchema}}`

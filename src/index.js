@@ -42,7 +42,9 @@ module.exports = {
     schemas,
     { mongodb, kafka, cache, server, metrics, redis },
   ) => {
-    schemas = _.map(schemas, convert)
+    schemas = await Promise.all(
+      _.map(schemas, convert.bind(null, kafka, logger)),
+    )
 
     const app = express()
       .use(compression())
@@ -82,7 +84,11 @@ module.exports = {
               }
             : null,
         })
-
+        logger.info(
+          `REST API for ${modelName} available at http://${server.host}:${
+            server.port
+          }/api/v1/${modelName}`,
+        )
         const kafkaOpts = _.cloneDeep(kafka)
         kafkaOpts.consumer.topics = [topic]
 
