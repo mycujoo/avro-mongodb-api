@@ -102,7 +102,6 @@ module.exports = {
             new Writable({
               objectMode: true,
               write: (doc, enc, cb) => {
-                logger.info('doc', doc)
                 const query = _.pick(doc, uniqueProps)
                 model.findOneAndUpdate(query, doc, { upsert: true }, cb)
               },
