@@ -1,6 +1,6 @@
 {
   "name": "@mycujoo/avro-mongodb-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Avro schema, to mongodb, to a powerful api",
   "main": "./src/index.js",
   "scripts": {
@@ -55,13 +55,14 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^23.6.0",
+    "mongodb": "^3.1.13",
     "prettier": "^1.15.3"
   },
   "author": "Joeri Malmberg",
   "license": "MIT",
   "dependencies": {
-    "@mycujoo/kafka-clients": "^0.1.0",
-    "@mycujoo/logger": "^0.0.1",
+    "@mycujoo/kafka-clients": "^1.0.2",
+    "@mycujoo/logger": "^1.0.3",
     "body-parser": "^1.18.3",
     "compression": "^1.7.3",
     "express": "^4.16.4",
