@@ -15,13 +15,10 @@ async function connectMongoose({ mongodb, logger, errorCounter, version }) {
 
   try {
     const uri = mongodbUri.format(mongodb)
-    const { connection } = await mongoose.connect(
-      uri,
-      {
-        useCreateIndex: true,
-        useNewUrlParser: true,
-      },
-    )
+    const { connection } = await mongoose.connect(uri, {
+      useCreateIndex: true,
+      useNewUrlParser: true,
+    })
 
     logger.info('Mongodb connected to', uri)
     connection.once('disconnected', reconnect)
