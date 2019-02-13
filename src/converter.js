@@ -5,7 +5,7 @@ const got = require('got')
 async function getSchemaForTopic({ logger, schemaRegistry, topic }) {
   const url = `${schemaRegistry}/subjects/${topic}-value/versions/latest`
 
-  logger.info(`Getting value schema from ${url}`)
+  logger.info(`Getting value schema for topic ${topic}`)
 
   const response = await got.get(url, { json: true })
   const subject = response.body
