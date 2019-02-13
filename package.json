@@ -1,6 +1,6 @@
 {
   "name": "@mycujoo/avro-mongodb-api",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Avro schema, to mongodb, to a powerful api",
   "main": "./src/index.js",
   "scripts": {
@@ -61,6 +61,7 @@
   "author": "Joeri Malmberg",
   "license": "MIT",
   "dependencies": {
+    "@mycujoo/express-cache": "^0.0.2",
     "@mycujoo/kafka-clients": "^1.0.2",
     "@mycujoo/logger": "^1.0.3",
     "body-parser": "^1.18.3",
