@@ -4,7 +4,6 @@ const { convertToMongoose } = require('../converter')
 
 const subs = require('./schema1.json')
 const comps = require('./schema2.json')
-const hls = require('./schema3.json')
 
 describe('Avro schema to mongoose tests', () => {
   test('It should convert the subscription avro schema to mongoose', () => {
@@ -38,9 +37,5 @@ describe('Avro schema to mongoose tests', () => {
       shortName: { type: String },
       traceToken: { type: String },
     })
-  })
-
-  test.only('It should convert the hls avro schema to mongoose', () => {
-    const mongooseComps = convertToMongoose(hls)
   })
 })
