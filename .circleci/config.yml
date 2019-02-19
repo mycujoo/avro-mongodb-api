@@ -7,8 +7,6 @@ defaults: &defaults
 
 jobs:
   test:
-    docker:
-      - image: mycujoo/gcloud-docker:1
     <<: *defaults  
     steps:
       - checkout
