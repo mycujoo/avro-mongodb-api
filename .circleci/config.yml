@@ -10,25 +10,36 @@ jobs:
     <<: *defaults  
     steps:
       - checkout
+      - setup_remote_docker
       - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          name: Configure environment and docker login
+          command: |
+            . gcloud/configure.sh
+            docker login -u _json_key -p "$(cat /root/gcp-key.json)" https://eu.gcr.io
       - run:
           name: Setup integration test dependencies
-          command: yarn
+          command: docker-compose -f compose/test/docker-compose.yaml up -d
 
       - run: 
+          name: Building test environment
+          command: docker build -t testimage .
+
+      - run:
           name: Run tests
-          command: yarn test
+          command: docker run -it --net test_default --name test testimage sh -c "NODE_ENV=citest yarn test --ci --coverage --forceExit"
+
+      - run: 
+          name: Clean up integration test dependencies
+          command: docker rm -f test && docker-compose -f compose/test/docker-compose.yaml down
 
   publish:
     <<: *defaults
     steps:
       - checkout
 
-      - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      # - run:
+      #     name: Authenticate with registry
+      #     command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
 
       - run:
           name: Publish package
@@ -39,6 +50,7 @@ workflows:
   test-deploy:
     jobs:
       - test:
+          context: org-global
           filters:
             tags:
               only: /\bv?(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[\da-z-]+(?:\.[\da-z-]+)*)?(?:\+[\da-z-]+(?:\.[\da-z-]+)*)?\b/
