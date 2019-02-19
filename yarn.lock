@@ -18,18 +18,18 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@mycujoo/express-cache@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@mycujoo/express-cache/-/express-cache-0.0.2.tgz#6d306e78300a9aafeca1af79183985b399a772bc"
-  integrity sha512-O/Rka99c+zbuHYcFIp0OyOjfj3kYZERTnc66sBTMIqUcO1NLsQmmmTRZcHwI3DgtM3akExl0X2lKfpmSzBIavw==
+"@mycujoo/express-cache@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@mycujoo/express-cache/-/express-cache-0.0.3.tgz#a84ea74c33cd8fabcc6ad4a97274ac77ebb1a56f"
+  integrity sha512-Yocyr9S2bzNkhAtCuiDYA9Fbdcf/ONgdtcsaDcmfPLPmchwOkglSRA/deIqzAbodCeWyL49BxbRJ3mbHzXJw0w==
   dependencies:
     ioredis "^4.5.1"
     lodash "^4.17.11"
 
-"@mycujoo/kafka-clients@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@mycujoo/kafka-clients/-/kafka-clients-1.0.4.tgz#073ec6d201d2e0fed9701b8a36a9c056b2b47ac4"
-  integrity sha512-w15/uoObvX5unuLg6UrsoqlwISfEdU+szjC3f2IGgeJ0Uj7Hgr9oJfEVhwRNco1EK2RRQsZPmVGYeiBh/do3DA==
+"@mycujoo/kafka-clients@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@mycujoo/kafka-clients/-/kafka-clients-1.0.5.tgz#d5a71c279535512a00cffc2df5d2a66bf451fb9d"
+  integrity sha512-GnCMv+2FVcW7mChZeqDBfaj1ZANJzTbOZS5nxE5qvXYdGjJ5peHlYbxLgheyDEUYhRfSy5s6UFpAfbuv8dTeRA==
   dependencies:
     config "^3.0.1"
     got "^9.5.0"
