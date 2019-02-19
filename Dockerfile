@@ -1,24 +1,13 @@
-FROM node:8.11-alpine
+FROM eu.gcr.io/mycujoo-fun-development/docker-nodejs-base:0.0.1
 
-RUN apk --no-cache add \
-      bash \
-      g++ \
-      ca-certificates \
-      lz4-dev \
-      musl-dev \
-      cyrus-sasl-dev \
-      openssl-dev \
-      make \
-      python
+WORKDIR /src
 
-RUN apk add --no-cache --virtual .build-deps gcc zlib-dev libc-dev bsd-compat-headers py-setuptools bash
-
-WORKDIR /app
-
-COPY . /app
-
-RUN cd /app
-
+# Copy the dependency files and install dependencies
+# This happens before the source code so that the dependency layer can be cached between source code changes
+COPY package.json yarn.lock .npmrc ./
 RUN yarn install
 
-CMD ["/bin/sh"]
+# Add the rest of the source code
+COPY . .
+
+CMD ["node", "index.js"]
