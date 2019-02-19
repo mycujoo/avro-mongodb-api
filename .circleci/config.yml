@@ -12,6 +12,11 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
+          name: Configure environment and docker login
+          command: |
+            . gcloud/configure.sh
+            docker login -u _json_key -p "$(cat /root/gcp-key.json)" https://eu.gcr.io
+      - run:
           name: Setup integration test dependencies
           command: docker-compose -f compose/test/docker-compose.yaml up -d
 
