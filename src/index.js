@@ -95,6 +95,9 @@ module.exports = {
         const consumer = new Consumer(kafkaOpts)
 
         consumer
+          .on('error', error => {
+            logger.error(error)
+          })
           .once('ready', () => {
             logger.info('Kafka consumer is ready')
           })
