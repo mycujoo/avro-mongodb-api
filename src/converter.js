@@ -91,7 +91,11 @@ function wrapInObject(k, v) {
   return obj
 }
 
-async function convert(kafka, logger, { uniqueProps, modelName, topic }) {
+async function convert(
+  kafka,
+  logger,
+  { uniqueProps, modelName, topic, indexes },
+) {
   const schema = await getSchemaForTopic({
     topic: topic,
     schemaRegistry: kafka.avro.schemaRegistry,
@@ -103,7 +107,7 @@ async function convert(kafka, logger, { uniqueProps, modelName, topic }) {
     mongooseSchema[prop].unique = true
   })
 
-  return { modelName, topic, schema: mongooseSchema, uniqueProps }
+  return { modelName, topic, schema: mongooseSchema, uniqueProps, indexes }
 }
 
 module.exports = {

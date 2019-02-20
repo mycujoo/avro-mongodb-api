@@ -18,6 +18,7 @@ const schemaSet = {
   modelName: 'Followers',
   topic,
 }
+
 const schemaSets = [schemaSet]
 
 const gotInstance = got.extend({
