@@ -17,7 +17,9 @@ When you configure the avro-mongodb-api properly and give it a topic, it will do
 
 https://florianholzapfel.github.io/express-restify-mongoose/#querying
 
-## Example:
+## Example
+
+There is a compose file included in this library that will setup your local zookeeper, kafka broker, schema registry, mongodb and redis. Don't forget to upload your kafka avro schema to the registry before running this lib!
 
 ```javascript
 'use strict'
@@ -85,3 +87,5 @@ applyMagic(
 })
 
 ```
+
+## Configuration options
