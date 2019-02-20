@@ -72,11 +72,12 @@ module.exports = {
     // Create mongoose models and setup their API endpoints.
     const models = _.map(
       schemas,
-      ({ modelName, schema, topic, uniqueProps }) => {
-        const model = mongoose.model(
-          modelName,
-          new mongoose.Schema(schema, { strict: false }),
-        )
+      ({ modelName, schema, topic, uniqueProps, indexes = [] }) => {
+        const mongooseSchema = new mongoose.Schema(schema, { strict: false })
+        _.each(indexes, index => {
+          mongooseSchema.index.apply(mongooseSchema, index)
+        })
+        const model = mongoose.model(modelName, mongooseSchema)
 
         restify.serve(router, model, {
           // Add cache-control headers incase cache was configured
