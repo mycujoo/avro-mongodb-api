@@ -1,4 +1,4 @@
-FROM eu.gcr.io/mycujoo-fun-development/docker-nodejs-base:0.0.1
+FROM eu.gcr.io/mycujoo-fun-development/docker-nodejs-base:0.0.2
 
 WORKDIR /src
 
