@@ -27,6 +27,8 @@ There is a compose file included in this library that will setup your local zook
 const { applyMagic } = require('@mycujoo/avro-mongodb-api')
 const logger = require('@mycujoo/logger')
 
+const topic = 'cmm_profiles_profile-updated_v2'
+
 const config = {
   mongodb: {
     hosts: [{ host: 'localhost', port: 27017 }],
@@ -38,7 +40,7 @@ const config = {
     port: 54321,
   },
   kafka: {
-    topic: 'cmm_profiles_profile-updated_v2',
+    topic,
     avro: {
       broker: 'localhost:9092',
       schemaRegistry: 'http://localhost:8081',
@@ -57,7 +59,7 @@ const config = {
     },
   },
   metrics: {
-    name: 'my-api',
+    name: 'myapi',
     version: '1.0.0',
     host: '0.0.0.0',
     port: 10255,
