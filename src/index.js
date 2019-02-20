@@ -42,21 +42,26 @@ module.exports = {
     schemas,
     { mongodb, kafka, cache, server, metrics, redis },
   ) => {
+    // Convert all configured schemas/topics to mongoose schema's
     schemas = await Promise.all(
       _.map(schemas, convert.bind(null, kafka, logger)),
     )
 
+    // Setup an express app and http server
     const app = express()
       .use(compression())
       .use(bodyParser.json())
       .use(methodOverride())
 
+    // Use caching middleware if redis is configured
     if (redis) app.use(ExpressCache(redis))
 
     const router = express.Router()
 
+    // Setup a metrics server
     const { metricServer, errorCounter } = getMetrics(metrics, app)
 
+    // Connect to mongodb
     await connectMongoose({
       mongodb,
       logger,
@@ -64,6 +69,7 @@ module.exports = {
       version: metrics.version,
     })
 
+    // Create mongoose models and setup their API endpoints.
     const models = _.map(
       schemas,
       ({ modelName, schema, topic, uniqueProps }) => {
@@ -73,6 +79,8 @@ module.exports = {
         )
 
         restify.serve(router, model, {
+          // Add cache-control headers incase cache was configured
+          // Can improve naming and options here
           postRead: cache
             ? (req, res, next) => {
                 if (req.erm.statusCode !== 200) return next()
@@ -89,6 +97,8 @@ module.exports = {
             server.port
           }/api/v1/${modelName}`,
         )
+
+        // Configure the kafka consumer
         const kafkaOpts = _.cloneDeep(kafka)
         kafkaOpts.consumer.topics = [topic]
 
@@ -112,7 +122,7 @@ module.exports = {
           )
       },
     )
-
+    // Finish setting up the http API
     app.use(router)
 
     const appServer = getServer(app, server)
