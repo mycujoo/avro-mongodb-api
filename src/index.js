@@ -37,6 +37,7 @@ function getServer(app, options) {
 }
 
 module.exports = {
+  avroToJSON,
   applyMagic: async (
     logger,
     schemas,
