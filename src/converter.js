@@ -1,5 +1,6 @@
 'use strict'
 const _ = require('lodash')
+const mongoose = require('mongoose')
 const got = require('got')
 
 async function getSchemaForTopic({ logger, schemaRegistry, topic }) {
@@ -75,7 +76,15 @@ function getFlatType(type, items, fields, name) {
     case 'long':
       return wrapInObject(name, Number)
     case 'array':
-      return wrapInObject(name, [convertToMongoose(items)])
+      return wrapInObject(name, [mongoose.Schema.Types.Mixed])
+    // if (
+    //   Array.isArray(items) &&
+    //   _.some(items, item => {
+    //     return typeof item === 'object'
+    //   })
+    // )
+
+    // return wrapInObject(name, [convertToMongoose(items)])
     case 'enum':
       return wrapInObject(name, String)
     case 'record':
@@ -110,7 +119,79 @@ async function convert(
   return { modelName, topic, schema: mongooseSchema, uniqueProps, indexes }
 }
 
+function unmapValue(value, key) {
+  // console.log(util.inspect(value, { showHidden: true, depth: null }))
+  if (_.isNil(value))
+    return {
+      value,
+      key,
+    }
+
+  if (typeof value !== 'object') {
+    return {
+      value,
+      key,
+    }
+  }
+
+  if (Array.isArray(value)) {
+    return {
+      key,
+      value: _.map(value, item => {
+        const res1 = avroToJSON(item)
+        if (
+          typeof item === 'object' &&
+          !Array.isArray(item) &&
+          Object.keys(item).length === 1
+        ) {
+          return _.assign({ __type: Object.keys(item)[0] }, _.values(item)[0])
+        }
+        return res1
+      }),
+    }
+  }
+
+  const keys = Object.keys(value)
+  if (keys.length > 1) {
+    return { key, value }
+  }
+
+  if (value.string) {
+    return {
+      value: value.string,
+      key,
+    }
+  }
+
+  if (value.int) {
+    return {
+      value: value.int,
+      key,
+    }
+  }
+
+  if (value.boolean) {
+    return {
+      value: value.boolean,
+      key,
+    }
+  }
+
+  return unmapValue(value[keys[0]], key)
+}
+
+function avroToJSON(avro) {
+  return _.chain(avro)
+    .map(unmapValue)
+    .reduce((m, c) => {
+      m[c.key] = c.value
+      return m
+    }, {})
+    .value()
+}
+
 module.exports = {
+  avroToJSON,
   convert,
   convertToMongoose,
   getArrayType,

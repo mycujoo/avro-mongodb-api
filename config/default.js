@@ -36,7 +36,7 @@ module.exports = {
         'auto.offset.reset': 'earliest',
       },
       broker: {
-        'group.id': 'test',
+        'group.id': 'test5',
         'metadata.broker.list': 'localhost:9092',
       },
     },

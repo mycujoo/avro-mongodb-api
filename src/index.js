@@ -12,7 +12,7 @@ const { Consumer } = require('@mycujoo/kafka-clients')
 const { Writable } = require('stream')
 const ExpressCache = require('@mycujoo/express-cache')
 
-const { convert } = require('./converter')
+const { convert, avroToJSON } = require('./converter')
 const { connectMongoose } = require('./database')
 const { getMetrics } = require('./metrics')
 
@@ -116,11 +116,13 @@ module.exports = {
             new Writable({
               objectMode: true,
               write: (doc, enc, cb) => {
-                const query = _.pick(doc, uniqueProps)
-                model.findOneAndUpdate(query, doc, { upsert: true }, cb)
+                const data = avroToJSON(doc)
+                const query = _.pick(data, uniqueProps)
+                model.findOneAndUpdate(query, data, { upsert: true }, cb)
               },
             }),
           )
+        return model
       },
     )
     // Finish setting up the http API
@@ -131,19 +133,15 @@ module.exports = {
     const start = async () => {
       await appServer.listen(server)
       logger.info(`App server listen at ${server.port}`)
-      if (metricServer) {
-        await metricServer.listen(metrics)
-        logger.info(`Metrics server listen at ${metrics.port}`)
-      }
+      await metricServer.listen(metrics)
+      logger.info(`Metrics server listen at ${metrics.port}`)
     }
 
     const stop = async () => {
       await appServer.close()
       logger.info(`App server closed`)
-      if (metricServer) {
-        await metricServer.close()
-        logger.info(`Metrics server closed`)
-      }
+      await metricServer.close()
+      logger.info(`Metrics server closed`)
     }
 
     return {
