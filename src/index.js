@@ -117,13 +117,15 @@ module.exports = {
             new Writable({
               objectMode: true,
               write: (doc, enc, cb) => {
+                // Auto convert the avro objets to regular json - Works in all cases I tested it on
+                // Might not work in all cases!
                 const data = avroToJSON(doc)
                 const query = _.pick(data, uniqueProps)
                 model.findOneAndUpdate(query, data, { upsert: true }, cb)
               },
             }),
           )
-        return model
+        return { model, consumer }
       },
     )
     // Finish setting up the http API
@@ -143,10 +145,13 @@ module.exports = {
       logger.info(`App server closed`)
       await metricServer.close()
       logger.info(`Metrics server closed`)
+      _.each(models, ({ consumer }) => {
+        consumer.destroy()
+      })
     }
 
     return {
-      models,
+      models: _.map(models, 'model'),
       router,
       server: appServer,
       metrics: metricServer,

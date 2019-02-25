@@ -1,7 +1,8 @@
 'use strict'
+
 const _ = require('lodash')
-const mongoose = require('mongoose')
 const got = require('got')
+const mongoose = require('mongoose')
 
 async function getSchemaForTopic({ logger, schemaRegistry, topic }) {
   const url = `${schemaRegistry}/subjects/${topic}-value/versions/latest`
@@ -77,14 +78,6 @@ function getFlatType(type, items, fields, name) {
       return wrapInObject(name, Number)
     case 'array':
       return wrapInObject(name, [mongoose.Schema.Types.Mixed])
-    // if (
-    //   Array.isArray(items) &&
-    //   _.some(items, item => {
-    //     return typeof item === 'object'
-    //   })
-    // )
-
-    // return wrapInObject(name, [convertToMongoose(items)])
     case 'enum':
       return wrapInObject(name, String)
     case 'record':
