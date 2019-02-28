@@ -1,5 +1,6 @@
 'use strict'
 
+const ExpressCache = require('@mycujoo/express-cache')
 const _ = require('lodash')
 const bodyParser = require('body-parser')
 const compression = require('compression')
@@ -10,7 +11,6 @@ const mongoose = require('mongoose')
 const restify = require('express-restify-mongoose')
 const { Consumer } = require('@mycujoo/kafka-clients')
 const { Writable } = require('stream')
-const ExpressCache = require('@mycujoo/express-cache')
 
 const { convert, avroToJSON } = require('./converter')
 const { connectMongoose } = require('./database')
@@ -73,11 +73,20 @@ module.exports = {
     // Create mongoose models and setup their API endpoints.
     const models = _.map(
       schemas,
-      ({ modelName, schema, topic, uniqueProps, indexes = [] }) => {
+      ({
+        modelName,
+        schema,
+        topic,
+        uniqueProps,
+        indexes = [],
+        postSave,
+        preSave,
+      }) => {
         const mongooseSchema = new mongoose.Schema(schema, { strict: false })
         _.each(indexes, index => {
           mongooseSchema.index.apply(mongooseSchema, index)
         })
+
         const model = mongoose.model(modelName, mongooseSchema)
 
         restify.serve(router, model, {
@@ -103,6 +112,7 @@ module.exports = {
         // Configure the kafka consumer
         const kafkaOpts = _.cloneDeep(kafka)
         kafkaOpts.consumer.topics = [topic]
+        kafkaOpts.consumer.broker['enable.auto.commit'] = false
 
         const consumer = new Consumer(kafkaOpts)
 
@@ -116,12 +126,24 @@ module.exports = {
           .pipe(
             new Writable({
               objectMode: true,
-              write: (doc, enc, cb) => {
+              write: async (doc, enc, cb) => {
                 // Auto convert the avro objets to regular json - Works in all cases I tested it on
                 // Might not work in all cases!
-                const data = avroToJSON(doc)
+                const json = avroToJSON(doc.parsed)
+                const data = preSave ? await preSave(json) : json
+
                 const query = _.pick(data, uniqueProps)
-                model.findOneAndUpdate(query, data, { upsert: true }, cb)
+                model.findOneAndUpdate(
+                  query,
+                  data,
+                  { upsert: true, new: true },
+                  async (error, mongoDoc) => {
+                    if (error) return cb(error)
+                    if (postSave) await postSave(model, mongoDoc)
+                    consumer.commit(doc)
+                    cb()
+                  },
+                )
               },
             }),
           )
