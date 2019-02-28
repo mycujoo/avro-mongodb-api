@@ -26,15 +26,15 @@
     ioredis "^4.5.1"
     lodash "^4.17.11"
 
-"@mycujoo/kafka-clients@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@mycujoo/kafka-clients/-/kafka-clients-1.1.2.tgz#f2fa59987e0dc79db1ed39331484b2d9be5c84bc"
-  integrity sha512-ClyEa6w42eXLb+NHs4To+orWmNd75NOVHQy05uODpuDhU6gTYPgBzHVXL5KpzhvpLJrEhKtG0sBiux5nflJfIA==
+"@mycujoo/kafka-clients@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@mycujoo/kafka-clients/-/kafka-clients-1.2.0.tgz#d8877e1a9ba1c65617bbbf28bbf593548ac6d175"
+  integrity sha512-yWoCeoVVrDs6WPDkjzW/fEt0LNXesQscPYkSlRJjXqSgwoJ5wbqusUCzSKTS+dvrstJH27AGBk+ohNYtCvs2uw==
   dependencies:
     config "^3.0.1"
     debug "^4.1.1"
     got "^9.5.0"
-    kafka-avro "git://github.com/mycujoo/kafka-avro.git#7bc5f88b2352c19653382edb1d72bfa97cefc3d3"
+    kafka-avro "git://github.com/mycujoo/kafka-avro.git#160394a075da34bed2e958396bbc70b398035a92"
     lodash "^4.17.11"
 
 "@mycujoo/logger@^1.0.3":
@@ -2943,9 +2943,9 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-"kafka-avro@git://github.com/mycujoo/kafka-avro.git#7bc5f88b2352c19653382edb1d72bfa97cefc3d3":
+"kafka-avro@git://github.com/mycujoo/kafka-avro.git#160394a075da34bed2e958396bbc70b398035a92":
   version "1.1.3"
-  resolved "git://github.com/mycujoo/kafka-avro.git#7bc5f88b2352c19653382edb1d72bfa97cefc3d3"
+  resolved "git://github.com/mycujoo/kafka-avro.git#160394a075da34bed2e958396bbc70b398035a92"
   dependencies:
     avsc "^5.2.3"
     axios "^0.15.3"

@@ -18,6 +18,7 @@ async function connectMongoose({ mongodb, logger, errorCounter, version }) {
     const { connection } = await mongoose.connect(uri, {
       useCreateIndex: true,
       useNewUrlParser: true,
+      useFindAndModify: false,
     })
 
     logger.info('Mongodb connected to', uri)

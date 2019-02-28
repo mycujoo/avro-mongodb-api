@@ -96,7 +96,7 @@ function wrapInObject(k, v) {
 async function convert(
   kafka,
   logger,
-  { uniqueProps, modelName, topic, indexes },
+  { uniqueProps, modelName, topic, indexes, postSave, preSave },
 ) {
   const schema = await getSchemaForTopic({
     topic: topic,
@@ -109,7 +109,15 @@ async function convert(
     mongooseSchema[prop].unique = true
   })
 
-  return { modelName, topic, schema: mongooseSchema, uniqueProps, indexes }
+  return {
+    modelName,
+    topic,
+    schema: mongooseSchema,
+    uniqueProps,
+    indexes,
+    postSave,
+    preSave,
+  }
 }
 
 function unmapValue(value, key) {
