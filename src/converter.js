@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const debug = require('debug')('avro-mongodb-api:converter')
 const got = require('got')
 const mongoose = require('mongoose')
 
@@ -9,7 +10,9 @@ async function getSchemaForTopic({ logger, schemaRegistry, topic }) {
 
   logger.info(`Getting value schema for topic ${topic}`)
 
+  debug('Getting schema from registry')
   const response = await got.get(url, { json: true })
+  debug('Schema registry response', response)
   const subject = response.body
 
   if (!subject || !subject.schema)
@@ -103,11 +106,13 @@ async function convert(
     schemaRegistry: kafka.avro.schemaRegistry,
     logger,
   })
+  debug(`${modelName} received schema`, schema)
 
   const mongooseSchema = convertToMongoose(schema)
   _.each(uniqueProps, prop => {
     mongooseSchema[prop].unique = true
   })
+  debug(`${modelName} build mongoose schema`, schema)
 
   return {
     modelName,

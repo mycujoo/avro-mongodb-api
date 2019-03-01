@@ -1,5 +1,6 @@
 'use strict'
 
+const debug = require('debug')('avro-mongodb-api:database')
 const mongoose = require('mongoose')
 const mongodbUri = require('mongodb-uri')
 
@@ -15,6 +16,7 @@ async function connectMongoose({ mongodb, logger, errorCounter, version }) {
 
   try {
     const uri = mongodbUri.format(mongodb)
+    debug('Database connection to uri', uri)
     const { connection } = await mongoose.connect(uri, {
       useCreateIndex: true,
       useNewUrlParser: true,
