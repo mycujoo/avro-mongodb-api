@@ -1,6 +1,6 @@
 {
   "name": "@mycujoo/avro-mongodb-api",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Avro schema, to mongodb, to a powerful api",
   "main": "./src/index.js",
   "scripts": {
@@ -66,6 +66,7 @@
     "@mycujoo/logger": "^1.0.3",
     "body-parser": "^1.18.3",
     "compression": "^1.7.3",
+    "debug": "^4.1.1",
     "express": "^4.16.4",
     "express-restify-mongoose": "^5.0.0",
     "got": "^9.6.0",

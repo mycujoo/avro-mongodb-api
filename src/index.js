@@ -4,6 +4,7 @@ const ExpressCache = require('@mycujoo/express-cache')
 const _ = require('lodash')
 const bodyParser = require('body-parser')
 const compression = require('compression')
+const debug = require('debug')('avro-mongodb-api')
 const express = require('express')
 const http = require('http')
 const methodOverride = require('method-override')
@@ -43,6 +44,14 @@ module.exports = {
     schemas,
     { mongodb, kafka, cache, server, metrics, redis },
   ) => {
+    debug('configuration options: ')
+    debug('configuration mongodb: ', mongodb)
+    debug('configuration kafka: ', kafka)
+    debug('configuration cache: ', cache)
+    debug('configuration server: ', server)
+    debug('configuration metrics: ', metrics)
+    debug('configuration redis: ', redis)
+    debug('received schemas', schemas)
     // Convert all configured schemas/topics to mongoose schema's
     schemas = await Promise.all(
       _.map(schemas, convert.bind(null, kafka, logger)),
@@ -55,7 +64,10 @@ module.exports = {
       .use(methodOverride())
 
     // Use caching middleware if redis is configured
-    if (redis) app.use(ExpressCache(redis))
+    if (redis) {
+      app.use(ExpressCache(redis))
+      debug('using redis cache')
+    }
 
     const router = express.Router()
 
@@ -79,9 +91,12 @@ module.exports = {
         topic,
         uniqueProps,
         indexes = [],
-        postSave,
         preSave,
+        postSave,
       }) => {
+        if (preSave) debug(`${modelName} Configured preSave middleware`)
+        if (postSave) debug(`${modelName} Configured postSave middleware`)
+
         const mongooseSchema = new mongoose.Schema(schema, { strict: false })
         _.each(indexes, index => {
           mongooseSchema.index.apply(mongooseSchema, index)
@@ -98,7 +113,7 @@ module.exports = {
                 if (req.originalMethod !== 'GET') return next()
 
                 res.setHeader('Cache-Control', `max-age=${cache.ttl}`)
-
+                debug(`${modelName} Cache control set`, `max-age=${cache.ttl}`)
                 next()
               }
             : null,
@@ -129,18 +144,24 @@ module.exports = {
               write: async (doc, enc, cb) => {
                 // Auto convert the avro objets to regular json - Works in all cases I tested it on
                 // Might not work in all cases!
+                debug(`${modelName} received doc from kafka`, doc)
                 const json = avroToJSON(doc.parsed)
+                debug(`${modelName} converted doc to json`, json)
                 const data = preSave ? await preSave(json) : json
+                if (preSave) debug('data after presave middleware', data)
 
                 const query = _.pick(data, uniqueProps)
+                debug(`${modelName} findOneAndUpdate query`, query)
                 model.findOneAndUpdate(
                   query,
                   data,
                   { upsert: true, new: true },
                   async (error, mongoDoc) => {
                     if (error) return cb(error)
+                    debug(`${modelName} updated in mongodb`, mongoDoc)
                     if (postSave) await postSave(model, mongoDoc)
                     consumer.commit(doc)
+                    debug(`${modelName} commited to kafka doc`, doc)
                     cb()
                   },
                 )
@@ -156,15 +177,19 @@ module.exports = {
     const appServer = getServer(app, server)
 
     const start = async () => {
+      debug(`Starting app server`)
       await appServer.listen(server)
       logger.info(`App server listen at ${server.port}`)
+      debug(`Starting metrics server`)
       await metricServer.listen(metrics)
       logger.info(`Metrics server listen at ${metrics.port}`)
     }
 
     const stop = async () => {
+      debug(`Stopping app server`)
       await appServer.close()
       logger.info(`App server closed`)
+      debug(`Stopping metrics server`)
       await metricServer.close()
       logger.info(`Metrics server closed`)
       _.each(models, ({ consumer }) => {

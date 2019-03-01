@@ -1,9 +1,10 @@
 'use strict'
 
 const config = require('config')
+const debug = require('debug')('avro-mongodb-api:uploadSchema')
 const got = require('got')
 
-function uploadSchema(topic, schema) {
+async function uploadSchema(topic, schema) {
   const gotInstance = got.extend({
     baseUrl: config.kafka.avro.schemaRegistry,
     headers: {
@@ -15,8 +16,10 @@ function uploadSchema(topic, schema) {
   const stringifiedSchema = JSON.stringify(JSON.stringify(schema))
 
   const payload = `{"schema":${stringifiedSchema}}`
-
-  return gotInstance.post(uri, { body: payload })
+  debug(`Uploading avro schema to uri`, uri)
+  debug(`Uploading avro schema payload`, payload)
+  const res = await gotInstance.post(uri, { body: payload })
+  debug(`Uploaded avro schema, response:`, res)
 }
 
 module.exports = uploadSchema
