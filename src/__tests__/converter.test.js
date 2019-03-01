@@ -5,6 +5,7 @@ const { convertToMongoose, avroToJSON } = require('../converter')
 const subs = require('./schema1.json')
 const comps = require('./schema2.json')
 const hl = require('./AvroHighlight.json')
+const season = require('./AvroSeason.json')
 
 describe('Avro schema to mongoose tests', () => {
   test('It should convert the subscription avro schema to mongoose', () => {
@@ -40,6 +41,17 @@ describe('Avro schema to mongoose tests', () => {
     })
   })
 
+  test('It should convert the season doc properly to json', () => {
+    const convertedSeason = avroToJSON(season)
+    expect(convertedSeason).toEqual({
+      id: 'cjsg44vwp0001cr88mfe3kkep',
+      teams: ['cjsg44vyf0004cr88qro9k8mv', 'cjsg44vyf0005cr88k2b7b9pc'],
+      deleted: false,
+      eventId: 'cjsg44vyf0004cr88qro9k8mv',
+      traceToken: 'cjsg44vyf0005cr88k2b7b9pc',
+      createdAt: 1550843428551,
+    })
+  })
   test('It should convert the HL doc properly to json', () => {
     const convertedHiglight = avroToJSON(hl)
     expect(convertedHiglight).toEqual({
