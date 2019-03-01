@@ -144,6 +144,7 @@ function unmapValue(value, key) {
     return {
       key,
       value: _.map(value, item => {
+        if (typeof item === 'number' || typeof item === 'string') return item
         const res1 = avroToJSON(item)
         if (
           typeof item === 'object' &&
