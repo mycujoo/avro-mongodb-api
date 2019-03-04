@@ -61,7 +61,7 @@
   "author": "Joeri Malmberg",
   "license": "MIT",
   "dependencies": {
-    "@mycujoo/express-cache": "^0.0.3",
+    "@mycujoo/express-cache": "^0.1.0",
     "@mycujoo/kafka-clients": "^1.2.0",
     "@mycujoo/logger": "^1.0.3",
     "body-parser": "^1.18.3",

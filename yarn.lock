@@ -18,10 +18,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@mycujoo/express-cache@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@mycujoo/express-cache/-/express-cache-0.0.3.tgz#a84ea74c33cd8fabcc6ad4a97274ac77ebb1a56f"
-  integrity sha512-Yocyr9S2bzNkhAtCuiDYA9Fbdcf/ONgdtcsaDcmfPLPmchwOkglSRA/deIqzAbodCeWyL49BxbRJ3mbHzXJw0w==
+"@mycujoo/express-cache@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@mycujoo/express-cache/-/express-cache-0.1.0.tgz#ddbc2d8f124f28839b38fb210eb218ca5e7cdb2a"
+  integrity sha512-tq0mfjXYGGISKrDc5G4m7XEwY30xpdwJoPNWWSIYH0Dkp7ledG2kmDgDDyCkBnpbXDWNtYhD9zLkCTUTGnNHKg==
   dependencies:
     ioredis "^4.5.1"
     lodash "^4.17.11"
