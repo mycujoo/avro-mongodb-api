@@ -83,7 +83,7 @@ module.exports = {
     })
 
     // Create mongoose models and setup their API endpoints.
-    const models = _.map(
+    const mongooseModels = _.map(
       schemas,
       ({
         modelName,
@@ -103,7 +103,35 @@ module.exports = {
         })
 
         const model = mongoose.model(modelName, mongooseSchema)
+        return {
+          modelName,
+          topic,
+          uniqueProps,
+          indexes,
+          preSave,
+          postSave,
+          model,
+        }
+      },
+    )
 
+    const modelByName = _.fromPairs(
+      _.map(mongooseModels, ({ modelName, model }) => {
+        return [modelName, model]
+      }),
+    )
+
+    const models = _.map(
+      mongooseModels,
+      ({
+        modelName,
+        topic,
+        uniqueProps,
+        indexes,
+        preSave,
+        postSave,
+        model,
+      }) => {
         restify.serve(router, model, {
           // Add cache-control headers incase cache was configured
           // Can improve naming and options here
@@ -147,7 +175,7 @@ module.exports = {
                 debug(`${modelName} received doc from kafka`, doc)
                 const json = avroToJSON(doc.parsed)
                 debug(`${modelName} converted doc to json`, json)
-                const data = preSave ? await preSave(json) : json
+                const data = preSave ? await preSave(modelByName, json) : json
                 if (preSave) debug('data after presave middleware', data)
 
                 const query = _.pick(data, uniqueProps)
@@ -159,7 +187,7 @@ module.exports = {
                   async (error, mongoDoc) => {
                     if (error) return cb(error)
                     debug(`${modelName} updated in mongodb`, mongoDoc)
-                    if (postSave) await postSave(model, mongoDoc)
+                    if (postSave) await postSave(modelByName, mongoDoc)
                     consumer.commit(doc)
                     debug(`${modelName} commited to kafka doc`, doc)
                     cb()
