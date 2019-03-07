@@ -25,21 +25,19 @@ module.exports = {
     password: null,
     ttl: 10,
   },
-  kafka: {
-    avro: {
-      broker: 'localhost:9092',
-      schemaRegistry: 'http://localhost:8081',
+  producer: { 'metadata.broker.list': `localhost:9092` },
+  consumer: {
+    topicOptions: {
+      'auto.offset.reset': 'earliest',
     },
-    producer: { 'metadata.broker.list': `localhost:9092` },
-    consumer: {
-      topicOptions: {
-        'auto.offset.reset': 'earliest',
-      },
-      broker: {
-        'group.id': 'test5',
-        'metadata.broker.list': 'localhost:9092',
-      },
+    broker: {
+      'group.id': 'test5',
+      'metadata.broker.list': 'localhost:9092',
     },
+  },
+  avro: {
+    broker: 'localhost:9092',
+    schemaRegistry: 'http://localhost:8081',
   },
   cache: {
     ttl: 60,

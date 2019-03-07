@@ -10,7 +10,7 @@ const http = require('http')
 const methodOverride = require('method-override')
 const mongoose = require('mongoose')
 const restify = require('express-restify-mongoose')
-const { Consumer } = require('@mycujoo/kafka-clients')
+const { Consumer, Producer } = require('@mycujoo/kafka-clients')
 const { Writable } = require('stream')
 
 const { convert, avroToJSON } = require('./converter')
@@ -132,9 +132,83 @@ module.exports = {
         postSave,
         model,
       }) => {
+        if (!kafka.consumer && !kafka.producer) return { model }
+        if (kafka.consumer && kafka.producer)
+          throw new Error(
+            'Found a configuration for both a consumer and producer :thinking_face:',
+          )
+        let consumer, producer, produce
+        if (kafka.consumer) {
+          const kafkaOpts = _.cloneDeep(kafka)
+          kafkaOpts.consumer.topics = [topic]
+          kafkaOpts.consumer.broker['enable.auto.commit'] = false
+
+          consumer = new Consumer(kafkaOpts)
+
+          consumer
+            .on('error', error => {
+              logger.error(error)
+            })
+            .once('ready', () => {
+              logger.info('Kafka consumer is ready')
+            })
+            .pipe(
+              new Writable({
+                objectMode: true,
+                write: async (doc, enc, cb) => {
+                  // Auto convert the avro objets to regular json - Works in all cases I tested it on
+                  // Might not work in all cases!
+                  debug(`${modelName} received doc from kafka`, doc)
+                  const json = avroToJSON(doc.parsed)
+                  debug(`${modelName} converted doc to json`, json)
+                  const data = preSave ? await preSave(modelByName, json) : json
+                  if (preSave) debug('data after presave middleware', data)
+
+                  const query = _.pick(data, uniqueProps)
+                  debug(`${modelName} findOneAndUpdate query`, query)
+                  model.findOneAndUpdate(
+                    query,
+                    data,
+                    { upsert: true, new: true },
+                    async (error, mongoDoc) => {
+                      if (error) return cb(error)
+                      debug(`${modelName} updated in mongodb`, mongoDoc)
+                      if (postSave) await postSave(modelByName, mongoDoc)
+                      consumer.commit(doc)
+                      debug(`${modelName} commited to kafka doc`, doc)
+                      cb()
+                    },
+                  )
+                },
+              }),
+            )
+        } else if (kafka.producer) {
+          const kafkaOpts = _.cloneDeep(kafka)
+          kafkaOpts.topic = topic
+
+          producer = new Producer(kafkaOpts)
+
+          producer
+            .on('error', error => {
+              logger.error(error)
+            })
+            .once('ready', () => {
+              logger.info('Kafka producer is ready')
+            })
+
+          produce = async (req, res, next) => {
+            const result = req.erm.result.toJSON()
+            console.log('result', result)
+            await producer.produce({ value: result, key: result.id })
+            next()
+          }
+        }
+
         restify.serve(router, model, {
           // Add cache-control headers incase cache was configured
           // Can improve naming and options here
+          postCreate: producer ? produce : null,
+          postUpdate: producer ? produce : null,
           postRead: cache
             ? (req, res, next) => {
                 if (req.erm.statusCode !== 200) return next()
@@ -146,6 +220,7 @@ module.exports = {
               }
             : null,
         })
+
         logger.info(
           `REST API for ${modelName} available at http://${server.host}:${
             server.port
@@ -153,50 +228,8 @@ module.exports = {
         )
 
         // Configure the kafka consumer
-        const kafkaOpts = _.cloneDeep(kafka)
-        kafkaOpts.consumer.topics = [topic]
-        kafkaOpts.consumer.broker['enable.auto.commit'] = false
 
-        const consumer = new Consumer(kafkaOpts)
-
-        consumer
-          .on('error', error => {
-            logger.error(error)
-          })
-          .once('ready', () => {
-            logger.info('Kafka consumer is ready')
-          })
-          .pipe(
-            new Writable({
-              objectMode: true,
-              write: async (doc, enc, cb) => {
-                // Auto convert the avro objets to regular json - Works in all cases I tested it on
-                // Might not work in all cases!
-                debug(`${modelName} received doc from kafka`, doc)
-                const json = avroToJSON(doc.parsed)
-                debug(`${modelName} converted doc to json`, json)
-                const data = preSave ? await preSave(modelByName, json) : json
-                if (preSave) debug('data after presave middleware', data)
-
-                const query = _.pick(data, uniqueProps)
-                debug(`${modelName} findOneAndUpdate query`, query)
-                model.findOneAndUpdate(
-                  query,
-                  data,
-                  { upsert: true, new: true },
-                  async (error, mongoDoc) => {
-                    if (error) return cb(error)
-                    debug(`${modelName} updated in mongodb`, mongoDoc)
-                    if (postSave) await postSave(modelByName, mongoDoc)
-                    consumer.commit(doc)
-                    debug(`${modelName} commited to kafka doc`, doc)
-                    cb()
-                  },
-                )
-              },
-            }),
-          )
-        return { model, consumer }
+        return { model, kafkaStream: producer || consumer }
       },
     )
     // Finish setting up the http API
@@ -220,8 +253,8 @@ module.exports = {
       debug(`Stopping metrics server`)
       await metricServer.close()
       logger.info(`Metrics server closed`)
-      _.each(models, ({ consumer }) => {
-        consumer.destroy()
+      _.each(models, ({ kafkaStream }) => {
+        kafkaStream.destroy()
       })
     }
 

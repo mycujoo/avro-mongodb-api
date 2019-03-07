@@ -110,7 +110,7 @@ async function convert(
 
   const mongooseSchema = convertToMongoose(schema)
   _.each(uniqueProps, prop => {
-    mongooseSchema[prop].unique = true
+    if (prop !== '_id') mongooseSchema[prop].unique = true
   })
   debug(`${modelName} build mongoose schema`, schema)
 

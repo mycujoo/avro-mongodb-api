@@ -6,7 +6,7 @@ const got = require('got')
 
 async function uploadSchema(topic, schema) {
   const gotInstance = got.extend({
-    baseUrl: config.kafka.avro.schemaRegistry,
+    baseUrl: config.avro.schemaRegistry,
     headers: {
       'Content-Type': 'application/vnd.schemaregistry.v1+json',
     },
