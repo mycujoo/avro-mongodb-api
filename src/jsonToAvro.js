@@ -1,13 +1,15 @@
 'use strict'
 
 const _ = require('lodash')
+const util = require('util')
 
 function jsonToAvro(schema, object) {
   const res = processRecord(object, schema)
   const doc = res[schema.name]
-  console.log('doc', doc.annotations[0])
+  console.log('doc.annotation', doc.annotations[0])
+  console.log('doc.annotations[0].actions', doc.annotations[0].actions[0])
   console.log('doc', doc)
-  console.log('doc', doc.annotations[0])
+  console.log(util.inspect(doc, { showHidden: true, depth: null }))
 
   return doc
 }
@@ -21,8 +23,9 @@ function processField(json, { name, doc, type }) {
     string: value => {
       return value
     },
-    enum: value => {
-      return value
+    enum: (value, type) => {
+      const obj = {}
+      obj[type.name] = value
     },
     boolean: value => {
       return value
@@ -33,15 +36,13 @@ function processField(json, { name, doc, type }) {
     int: value => {
       return value
     },
-    array: value => {},
-    object: value => {},
   }
 
   const option = options[type]
 
   if (option) {
     const obj = {}
-    obj[name] = options[type](json)
+    obj[name] = options[type](json, type)
     return obj
   }
   if (Array.isArray(type)) {
@@ -63,14 +64,42 @@ function processField(json, { name, doc, type }) {
 
     if (type.type === 'array') {
       const obj = {}
-      obj[name] = _.map(json, item => {
-        const rec = processRecord(item, type.items)
-        return rec[type.items.name]
-      })
+      if (!Array.isArray(type.items)) {
+        obj[name] = _.map(json, item => {
+          const rec = processRecord(item, type.items)
+          return rec[type.items.name]
+        })
+        return obj
+      }
+      obj[name] = _.map(json, processUnions.bind(null, type.items))
+      return obj
+    }
+
+    if (type.type === 'enum') {
+      const obj = {}
+      // const enumDoc = {}
+      // enumDoc[type.name] = json
+      obj[name] = json
       return obj
     }
   }
-  throw new Error(`Found an unknown avro type: ${JSON.stringify(type)}`)
+  const obj = {}
+  // const subDoc = {}
+  // subDoc[type] = json
+  obj[name] = json
+  return obj
+  // throw new Error(`Found an unknown avro type: ${JSON.stringify(type)}`)
+}
+
+function processUnions(unionTypes, jsonItem) {
+  console.log('jsonItem', jsonItem)
+  const unionType = _.find(unionTypes, ({ name }) => {
+    return name === jsonItem.__type
+  })
+
+  const res = processRecord(_.omit(jsonItem, '__type'), unionType)
+
+  return res
 }
 
 function processRecord(json, { type, name, doc, fields }) {
@@ -80,12 +109,6 @@ function processRecord(json, { type, name, doc, fields }) {
     (m, field) => {
       const res = processField(json[field.name], field)
       return _.assign(res, m)
-      // const obj = {}
-      // console.log('key', key)
-      // console.log('json[key]', json[key])
-      // const doc = processField(json[key], value)
-      // obj[key] = doc
-      // return _.assign(obj, m)
     },
     {},
   )
@@ -93,16 +116,33 @@ function processRecord(json, { type, name, doc, fields }) {
 }
 
 function processArrayType(json, array) {
+  if (!json) {
+    if (
+      !_.some(array, item => {
+        return item === 'null'
+      })
+    )
+      throw new Error(
+        `Found a null value where that isnt allowed, expecting: ${JSON.stringify(
+          array,
+        )}`,
+      )
+    return null
+  }
+
   const nulllessArray = _.without(array, 'null')
 
   if (nulllessArray.length === 1) {
     const obj = {}
     if (typeof nulllessArray[0] !== 'object') obj[nulllessArray[0]] = json
-    // if (typeof nulllessArray[0].type == ret) obj[nulllessArray[0]] = json
     else {
+      if (nulllessArray[0].type === 'enum') {
+        obj[nulllessArray[0].name] = json
+        return obj
+      }
       return processRecord(json, nulllessArray[0])
     }
     return obj
   }
-  return console.log('omg we have a bigger array then expected')
+  throw new Error('omg we have a bigger array then expected')
 }
