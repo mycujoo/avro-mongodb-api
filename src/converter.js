@@ -75,6 +75,8 @@ function getFlatType(type, items, fields, name) {
       return wrapInObject(name, String)
     case 'int':
       return wrapInObject(name, Number)
+    case 'double':
+      return wrapInObject(name, Number)
     case 'boolean':
       return wrapInObject(name, Boolean)
     case 'long':
