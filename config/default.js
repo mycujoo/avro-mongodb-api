@@ -32,6 +32,7 @@ module.exports = {
     },
     producer: { 'metadata.broker.list': `localhost:9092` },
     consumer: {
+      parseToJson: true,
       topicOptions: {
         'auto.offset.reset': 'earliest',
       },

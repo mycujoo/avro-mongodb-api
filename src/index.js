@@ -13,7 +13,7 @@ const restify = require('express-restify-mongoose')
 const { Consumer } = require('@mycujoo/kafka-clients')
 const { Writable } = require('stream')
 
-const { convert, avroToJSON } = require('./converter')
+const { convert } = require('./converter')
 const { connectMongoose } = require('./database')
 const { getMetrics } = require('./metrics')
 
@@ -38,7 +38,6 @@ function getServer(app, options) {
 }
 
 module.exports = {
-  avroToJSON,
   applyMagic: async (
     logger,
     schemas,
@@ -155,6 +154,7 @@ module.exports = {
         // Configure the kafka consumer
         const kafkaOpts = _.cloneDeep(kafka)
         kafkaOpts.consumer.topics = [topic]
+        kafkaOpts.parseToJson = true
         kafkaOpts.consumer.broker['enable.auto.commit'] = false
 
         const consumer = new Consumer(kafkaOpts)
@@ -173,7 +173,7 @@ module.exports = {
                 // Auto convert the avro objets to regular json - Works in all cases I tested it on
                 // Might not work in all cases!
                 debug(`${modelName} received doc from kafka`, doc)
-                const json = avroToJSON(doc.parsed)
+                const json = doc.json
                 debug(`${modelName} converted doc to json`, json)
                 const data = preSave ? await preSave(modelByName, json) : json
                 if (preSave) debug('data after presave middleware', data)

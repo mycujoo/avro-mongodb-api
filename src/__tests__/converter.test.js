@@ -40,46 +40,4 @@ describe('Avro schema to mongoose tests', () => {
       traceToken: { type: String },
     })
   })
-
-  test('It should convert the season doc properly to json', () => {
-    const convertedSeason = avroToJSON(season)
-    expect(convertedSeason).toEqual({
-      id: 'cjsg44vwp0001cr88mfe3kkep',
-      teams: ['cjsg44vyf0004cr88qro9k8mv', 'cjsg44vyf0005cr88k2b7b9pc'],
-      deleted: false,
-      eventId: 'cjsg44vyf0004cr88qro9k8mv',
-      traceToken: 'cjsg44vyf0005cr88k2b7b9pc',
-      createdAt: 1550843428551,
-    })
-  })
-  test('It should convert the HL doc properly to json', () => {
-    const convertedHiglight = avroToJSON(hl)
-    expect(convertedHiglight).toEqual({
-      id: 'cjsg44vwp0001cr88mfe3kkep',
-      event: 'cjsg44vst0000cr88768nlnfz',
-      annotations: [
-        {
-          id: 'cjsg44vxp0002cr88iuh3ymff',
-          elapsedTime: 10,
-          type: 'goal',
-          team: 'home',
-          personId: null,
-          actions: [
-            {
-              __type: 'ScoreChangeAction',
-              type: 'increased',
-              team: 'home',
-            },
-          ],
-          createdAt: 1550843428526,
-        },
-      ],
-      video: { position: 10, duration: 500, videoUrl: null, imageUrl: null },
-      primaryAnnotationId: 'cjsg44vxp0002cr88iuh3ymff',
-      deleted: false,
-      eventId: 'cjsg44vyf0004cr88qro9k8mv',
-      traceToken: 'cjsg44vyf0005cr88k2b7b9pc',
-      createdAt: 1550843428551,
-    })
-  })
 })
