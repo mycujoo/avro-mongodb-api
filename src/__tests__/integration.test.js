@@ -90,7 +90,6 @@ describe('The avro mongodb api tests', () => {
       id: 'test1',
       __v: 0,
       follows: [{ id: 'follow1', type: 'team' }],
-      previousId: null,
     })
   })
 
