@@ -1,11 +1,9 @@
 'use strict'
 const mongoose = require('mongoose')
-const { convertToMongoose, avroToJSON } = require('../converter')
+const { convertToMongoose } = require('../converter')
 
 const subs = require('./schema1.json')
 const comps = require('./schema2.json')
-const hl = require('./AvroHighlight.json')
-const season = require('./AvroSeason.json')
 
 describe('Avro schema to mongoose tests', () => {
   test('It should convert the subscription avro schema to mongoose', () => {
