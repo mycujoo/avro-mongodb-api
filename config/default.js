@@ -29,6 +29,9 @@ module.exports = {
     avro: {
       broker: 'localhost:9092',
       schemaRegistry: 'http://localhost:8081',
+      parseOptions: {
+        wrapUnions: true,
+      },
     },
     producer: { 'metadata.broker.list': `localhost:9092` },
     consumer: {

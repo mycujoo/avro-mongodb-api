@@ -19,7 +19,7 @@ async function uploadSchema(topic, schema) {
   debug(`Uploading avro schema to uri`, uri)
   debug(`Uploading avro schema payload`, payload)
   const res = await gotInstance.post(uri, { body: payload })
-  debug(`Uploaded avro schema, response:`, res)
+  debug(`Uploaded avro schema, response:`, res.statusCode)
 }
 
 module.exports = uploadSchema
