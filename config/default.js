@@ -26,6 +26,9 @@ module.exports = {
     ttl: 10,
   },
   kafka: {
+    jsonToAvroOptions: {
+      wrapUnions: true,
+    },
     avro: {
       broker: 'localhost:9092',
       schemaRegistry: 'http://localhost:8081',
