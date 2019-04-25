@@ -26,10 +26,10 @@
     ioredis "^4.5.1"
     lodash "^4.17.11"
 
-"@mycujoo/kafka-clients@^2.0.6":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@mycujoo/kafka-clients/-/kafka-clients-2.0.6.tgz#2fea512669522ebe7295f9f30f213fe8c57bd0b8"
-  integrity sha512-rI5CljUqN68uC32A+rZsVFqOTUbIvV3hbee4Y5honiZcw4cLLIWBrxcNHL6rwQCKXPS0ZPlY0Z4SlMKSFTFJQQ==
+"@mycujoo/kafka-clients@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@mycujoo/kafka-clients/-/kafka-clients-2.1.0.tgz#477f64596343bf2b2d4bb5b2d4c7cdce5f70923c"
+  integrity sha512-s7a5Ek1t63vEdRmBJKuAqEUy+p0ben4xkgXJMOvqT7gR45lNQEpXludnJs1w+ji5Hq4zvwy3T3C7K+KqheopGQ==
   dependencies:
     config "^3.0.1"
     debug "^4.1.1"
