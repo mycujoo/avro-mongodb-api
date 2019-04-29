@@ -3,7 +3,7 @@ services:
   mongodb:
     container_name: mongodb
     restart: always
-    image: mongo:3.6
+    image: mongo:4
     ports:
     - "27017:27017"
 
@@ -30,7 +30,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_NUM_PARTITIONS: 2
+      KAFKA_NUM_PARTITIONS: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:9092
