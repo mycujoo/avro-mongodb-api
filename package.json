@@ -1,10 +1,10 @@
 {
   "name": "@mycujoo/avro-mongodb-api",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "Avro schema, to mongodb, to a powerful api",
   "main": "./src/index.js",
   "scripts": {
-    "test": "eslint . && jest",
+    "test": "eslint . && jest --coverage --verbose",
     "tests": "jest --watch --verbose"
   },
   "jest": {
@@ -62,7 +62,7 @@
   "license": "MIT",
   "dependencies": {
     "@mycujoo/express-cache": "^0.1.0",
-    "@mycujoo/kafka-clients": "^2.1.1",
+    "@mycujoo/kafka-clients": "^2.1.2",
     "@mycujoo/logger": "^1.0.3",
     "body-parser": "^1.18.3",
     "compression": "^1.7.3",

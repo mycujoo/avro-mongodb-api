@@ -1,17 +1,19 @@
 # avro-mongodb-api
 
 ## TODO:
-Implement format function for schema's with custom typed unions. Or the intelligence to parse it on our own. 
+
 Expand docs.
 Expand testing
 
 ## What does it do
+
 When you configure the avro-mongodb-api properly and give it a topic, it will do the following things:
-* Download the schema from the schemaregistry and create a mongodb schema.
-* It will setup a consumer for the topic and consume it's data into the database. The configuration option uniqueProps will determine if a message on the topic is an update or new document. E.g if two items come by with the same uniqueProp the last received item will be stored in the database and retrievable through the API.
-* Setup up an API that you can query to retrieve the data, optionally cached with redis. 
-* Setup a http server to host prometheus metrics. Error and request counters will be available at path /metrics
-* You can supply your own logger, it must have an info and error function.
+
+- Download the schema from the schemaregistry and create a mongodb schema.
+- It will setup a consumer for the topic and consume it's data into the database. The configuration option uniqueProps will determine if a message on the topic is an update or new document. E.g if two items come by with the same uniqueProp the last received item will be stored in the database and retrievable through the API.
+- Setup up an API that you can query to retrieve the data, optionally cached with redis.
+- Setup a http server to host prometheus metrics. Error and request counters will be available at path /metrics
+- You can supply your own logger, it must have a info and error function.
 
 ## How to query
 
@@ -41,6 +43,9 @@ const config = {
   },
   kafka: {
     topic,
+    jsonToAvroOptions: {
+      wrapUnions: true, // Set to false when dealing with unambiguously wrapped unions in your avro schema (such as the highlights schema).
+    },
     avro: {
       broker: 'localhost:9092',
       schemaRegistry: 'http://localhost:8081',
@@ -53,9 +58,9 @@ const config = {
         'auto.offset.reset': 'earliest',
       },
       broker: {
-          'group.id': 'profs-0',
-          'metadata.broker.list': `localhost:9092`,
-        },
+        'group.id': 'profs-0',
+        'metadata.broker.list': `localhost:9092`,
+      },
     },
   },
   metrics: {
@@ -78,7 +83,7 @@ applyMagic(
   logger,
   [
     {
-      uniqueProps: [ 'id' ],
+      uniqueProps: ['id'],
       modelName: 'MyModel',
       topic: config.kafka.topic,
     },
@@ -87,7 +92,6 @@ applyMagic(
 ).then(async ({ start }) => {
   await start()
 })
-
 ```
 
 ## Configuration options
