@@ -182,8 +182,8 @@ module.exports = {
                 debug(`${modelName} findOneAndUpdate query`, query)
                 model.findOneAndUpdate(
                   query,
-                  data,
-                  { upsert: true, new: true },
+                  { $set: data },
+                  { upsert: true, new: true, lean: true },
                   async (error, mongoDoc) => {
                     if (error) return cb(error)
                     debug(`${modelName} updated in mongodb`, mongoDoc)
