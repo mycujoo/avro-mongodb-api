@@ -162,6 +162,7 @@ module.exports = {
         consumer
           .on('error', error => {
             logger.error(error)
+            throw error
           })
           .once('ready', () => {
             logger.info('Kafka consumer is ready')
