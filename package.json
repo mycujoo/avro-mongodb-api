@@ -69,7 +69,7 @@
     "debug": "^4.1.1",
     "express": "^4.16.4",
     "express-restify-mongoose": "^5.0.0",
-    "got": "^9.6.0",
+    "got": "^11.8.5",
     "lodash": "^4.17.11",
     "method-override": "^3.0.0",
     "mongodb-uri": "^0.9.7",
